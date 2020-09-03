@@ -1,0 +1,6 @@
+roms/
+bin/
+obj/
+chip8emu.cbp
+chip8emu.depend
+chip8emu.layout
