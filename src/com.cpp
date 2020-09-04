@@ -3,7 +3,7 @@
 std::string Com::curLeft(int n)
 {
     std::stringstream os;
-    os << "\033[" << n << "A";
+    os << "\033[" << n << "D";
     return os.str();
 }
 
@@ -36,4 +36,14 @@ std::string Com::curSave()
 std::string Com::curLoad()
 {
     return "\033[u";
+}
+
+std::string Com::curHide()
+{
+    return "\e[?25l";
+}
+
+std::string Com::curShow()
+{
+    return "\e[?25h";
 }

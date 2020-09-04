@@ -15,7 +15,7 @@
 #include "filehandle.h"
 #include "cpu.h"
 
-#define DEFAULT_CLOK_SPEED   100        // Emulators default speed in Hz
+#define DEFAULT_CLOK_SPEED   540        // Emulators default speed in Hz
 
 using namespace std;
 
@@ -27,8 +27,6 @@ class Emulator : public Com
 
         void start();                   // Start emulator
         int typeText();                 // Get typed command from user
-
-    protected:
 
     private:
         int readText(std::string txt);  // Process users command

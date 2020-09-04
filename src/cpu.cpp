@@ -10,33 +10,34 @@ Cpu::~Cpu()
     //dtor
 }
 
-void Cpu::reset()
+void Cpu::reset()   // Reset Cpu
 {
-    memset(&ROM[0], 255, sizeof(ROM));
+    memset(&ROM[0], 0, sizeof(ROM));      // Empty memory and registers
     memset(&Stack[0], 0, sizeof(Stack));
     memset(&V[0], 0, sizeof(V));
-    loadFonts();
+    loadFonts();                          // Load fonts in ROM
     DT = 0;
     ST = 0;
     I = 0;
-    PC = 512;
+    PC = 512;                            // Set program counter to 0x200
     SP = 0;
     cpu_state = STATE_HOLD;
 }
 
-void Cpu::init()
+void Cpu::init()    // Init Cpu
 {
     reset();
-    cpu_Hz = 500;
-    delay_Hz = 60;
+    cpu_Hz = 500;       // Default clock speeds for processor and delay timer
 
     srand((unsigned)time(NULL));
 
+    // Chip-8 instructions in hexadecimal numbers
     uint16_t op_codes_[34] = {0x00e0, 0x00ee, 0x1000, 0x2000, 0x3000, 0x4000, 0x5000, 0x6000, 0x7000, 0x8000, 0x8001,
                               0x8002, 0x8003, 0x8004, 0x8005, 0x8006, 0x8007, 0x800e, 0x9000, 0xa000, 0xb000, 0xc000,
                               0xd000, 0xe09e, 0xe0a1, 0xf007, 0xf00a, 0xf015, 0xf018, 0xf01e, 0xf029, 0xf033, 0xf055,
                               0xf065};
 
+    // Masks for instructions to compare with bits
     uint16_t op_masks_[34] = {0xffff, 0xffff, 0xf000, 0xf000, 0xf000, 0xf000, 0xf00f, 0xf000, 0xf000, 0xf00f, 0xf00f,
                               0xf00f, 0xf00f, 0xf00f, 0xf00f, 0xf00f, 0xf00f, 0xf00f, 0xf00f, 0xf000, 0xf000, 0xf000,
                               0xf000, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff, 0xf0ff,
@@ -49,15 +50,15 @@ void Cpu::init()
     }
 }
 
-double Cpu::clockToMs(clock_t ticks)
+double Cpu::clockToMs(clock_t ticks)    // Convert clock ticks to milliseconds
 {
     return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
 }
 
-void Cpu::loadFonts()
+void Cpu::loadFonts()   // Load Chip-8 fonts (0 - F) in ROM[0x000 - 0x050]
 {
-    uint8_t font_data[80] = {0xF0, 0x90, 0x90, 0x90, 0xF0,
-                             0x20, 0x60, 0x20, 0x20, 0x70,
+    uint8_t font_data[80] = {0xF0, 0x90, 0x90, 0x90, 0xF0,  // Font data stored in bits.
+                             0x20, 0x60, 0x20, 0x20, 0x70,  // One font is five bytes long (8x5 pixels)
                              0xF0, 0x10, 0xF0, 0x80, 0xF0,
                              0xF0, 0x10, 0xF0, 0x10, 0xF0,
                              0x90, 0x90, 0xF0, 0x10, 0x10,
@@ -73,10 +74,10 @@ void Cpu::loadFonts()
                              0xF0, 0x80, 0xF0, 0x80, 0xF0,
                              0xF0, 0x80, 0xF0, 0x80, 0x80};
 
-    for (int i = 0; i < 80; i++) ROM[i] = font_data[i];
+    for (int i = 0; i < 80; i++) ROM[i] = font_data[i];     // Store font data in ROM[0x000 - 0x050]
 }
 
-void Cpu::load(std::vector<uint8_t> program)
+void Cpu::load(std::vector<uint8_t> program)    // Load program in ROM
 {
     reset();
     int c = 512;
@@ -84,11 +85,11 @@ void Cpu::load(std::vector<uint8_t> program)
     {
         ROM[c] = i;
         c++;
-        if (c == 4096) break;
+        if (c == 4096) break;   // Stop if can't fit program in 4Kb memory
     }
 }
 
-int Cpu::hexInt(std::string str)
+int Cpu::hexInt(std::string str)    // Change hexadecimal string to integer
 {
     int x;
     std::stringstream ss;
@@ -97,42 +98,42 @@ int Cpu::hexInt(std::string str)
     return x;
 }
 
-void Cpu::drawSprite(int x, int y, int nibble)
-{
+void Cpu::drawSprite(int x, int y, int nibble)  // Draw sprite on screen with renderer
+{                                               // Nibble is 4-bit value for sprite height to draw
     std::vector<uint8_t> sprite;
     for (int i = I; i < I + nibble; i++)
     {
         sprite.push_back(ROM[i]);
     }
-    V[15] = renderer.drawSprite(x, y, sprite);
+    V[15] = renderer.drawSprite(x, y, sprite);  // Store collision info in register VF
 }
 
-void Cpu::BCD_decode(int v)
+void Cpu::BCD_decode(int v) // Decode byte from register V[v] to individual numbers
 {
     std::stringstream BCD_string;
     BCD_string << (int)V[v];
     std::string BCD_byte = BCD_string.str();
     BCD_byte = std::string(3 - BCD_byte.length(), '0') + BCD_byte;
-    ROM[I] = (uint8_t)(BCD_byte[0] - '0');
-    ROM[I + 1] = (uint8_t)(BCD_byte[1] - '0');
+    ROM[I] = (uint8_t)(BCD_byte[0] - '0');          // Save hundreds in ROM[I], tens in ROM[I + 1]
+    ROM[I + 1] = (uint8_t)(BCD_byte[1] - '0');      // and ones in ROM[I + 2].
     ROM[I + 2] = (uint8_t)(BCD_byte[2] - '0');
 }
 
-void Cpu::executeInstruction()
+void Cpu::executeInstruction()  // Execute instruction from ROM-address where program counter points
 {
-    uint16_t bytes = ROM[PC] << 8 | ROM[PC + 1];
+    uint16_t bytes = ROM[PC] << 8 | ROM[PC + 1];    // Merge two 8-bit variables to one 16-bit variable
     uint16_t I_temp, bytes_op;
 
-    uint8_t n1_1 = (bytes & 0x0f00) >> 8;
-    uint8_t n2_1 = (bytes & 0x00f0) >> 4;
-    uint8_t n2_2 = bytes & 0x00ff;
-    uint8_t n3_1 = bytes & 0x000f;
-    uint16_t n1_3 = bytes & 0x0fff;
+    uint8_t n1_1 = (bytes & 0x0f00) >> 8;           // Byte from position 0x0X00
+    uint8_t n2_1 = (bytes & 0x00f0) >> 4;           // Byte from position 0x00X0
+    uint8_t n2_2 = bytes & 0x00ff;                  // Byte from position 0x00XX
+    uint8_t n3_1 = bytes & 0x000f;                  // Byte from position 0x000X
+    uint16_t n1_3 = bytes & 0x0fff;                 // UShort from position 0x0XXX
 
-    for (int i = 0; i < 34; i++)
+    for (int i = 0; i < 34; i++)    // Loop trough possible instructions
     {
-        bytes_op = bytes & op_masks[i];
-        if (!(bytes_op ^ op_codes[i]))
+        bytes_op = bytes & op_masks[i];     // AND readed bits with current instructions meaning bits
+        if (!(bytes_op ^ op_codes[i]))      // XOR bits_op with current instruction if they match
         {
             switch (i) {
                 case 0: // CLS
@@ -294,62 +295,56 @@ void Cpu::executeInstruction()
     PC += 2;
 }
 
-void Cpu::run(int cpu_speed)
+void Cpu::run(int cpu_speed)    // Start Cpu and set clock speed(Hz)
 {
     cpu_Hz = cpu_speed;
-    cpu_time = delay_time = clock();
-    cpu_state = STATE_LOAD;
+    cpu_state = STATE_EXECUTE;
     cpu_run = true;
+    float ticks = 0;
 
-    cout << endl;
+    cout << endl << curHide() << flush;
+
+    renderer.start();           // Start renderer
     renderer.draw();
-    renderer.clr();
     renderer.drawKeyboard();
+    keyboard.clearKeys();       // Clear keybuffer
 
-    keyboard.clearKeys();
+    chrono::duration<long, ratio<1,60>> cpu_tick_Hz(1); // Screen refresh rate 60Hz
 
-    while (cpu_run)
+    while (cpu_run)             // Loop while program stop
     {
-        clock_t cpu_cycle = clock();
+        auto cpu_timer = std::chrono::steady_clock::now();  //  Start_cpu_timer;
+        ticks += (float)cpu_Hz / 60.0;  // Count how many ticks emulate on next frame
 
-        if (clockToMs(cpu_cycle - cpu_time) > 1000.0 / (double)cpu_Hz)
+        for (int i = 0; i < (int)ticks; i++)
         {
-            cpu_time = clock();
-            switch (cpu_state)
+            switch (cpu_state)  // Each tick check Cpu state
             {
                 case STATE_HOLD:
                     break;
-                case STATE_LOAD:
-                    if (PC >= 4096) cpu_run = false;
-                    cpu_state = STATE_EXECUTE;
-                    break;
                 case STATE_EXECUTE:
                     keyboard.readKeys();
-                    if (keyboard.getKey(16)) cpu_run = false;
-                    if (keyboard.getKey(17))
+                    if (keyboard.getKey(16) || PC >= 4096)
+                    {
+                        cpu_run = false;   // If Esc is pressed, stop
+                        cpu_state = STATE_HOLD;
+                    }
+                    if (keyboard.getKey(17))    // If space is pressed, pause
                     {
                         while(_kbhit()) getch();
                         getch();
                     }
-                    executeInstruction();
-                    cpu_state = STATE_LOAD;
+                    executeInstruction();   // Execute next instruction from memory where PC points
                     break;
             }
         }
-        if (clockToMs(cpu_cycle - delay_time) > 1000.0 / (double)delay_Hz)
-        {
-            delay_time = clock();
-            if (DT > 0) DT--;
-            if (ST > 0) ST--; // No sound effects programmed
-        }
-    }
-    while(_kbhit()) getch();
-    cout << endl;
-}
+        ticks -= (int)ticks;
+        if (DT > 0) DT--;   // Decrease delay- and sound timers
+        if (ST > 0) ST--;   // No sound effects programmed
 
-int summa(int *t, int N)
-{
-    int tulos = 0;
-    for (int i = 0; i < N; i++) tulos += t[i];
-    return tulos;
+        std::this_thread::sleep_until(cpu_timer + cpu_tick_Hz);   // Slow emulator down to 60Hz
+    }
+
+    cout << endl << curShow() << flush;
+    while(_kbhit()) getch();    // Clear keybuffer before exit to console
 }

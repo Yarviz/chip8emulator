@@ -10,6 +10,7 @@ Filehandle::~Filehandle()
     //dtor
 }
 
+// Get list of programs in "rom\"-directory
 void Filehandle::getFiles(std::vector<std::string> *file_list)
 {
     file_list->clear();
@@ -37,6 +38,7 @@ void Filehandle::getFiles(std::vector<std::string> *file_list)
     closedir(rom_dir);
 }
 
+// Load program from "rom\"-directory
 bool Filehandle::loadFile(std::vector<uint8_t> *rom, std::string filename)
 {
     std::string file_name = "roms/" + filename + ".ch8";

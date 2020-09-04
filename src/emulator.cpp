@@ -72,7 +72,7 @@ int Emulator::readText(std::string txt)     // Process users command
                     break;
 
                 case 3:     // Load program in memory
-                    if (words.size() == 2)
+                    if (words.size() > 1)
                     {
                         if (File.loadFile(&program, words[1]))
                         {
@@ -88,7 +88,7 @@ int Emulator::readText(std::string txt)     // Process users command
                     if (program.size())
                     {
                         cpu.load(program);
-                        if (words.size() == 2)
+                        if (words.size() > 1)
                         {
                             int clk_speed = atoi(words[1].data());
                             if (clk_speed > 0) cpu.run(clk_speed);

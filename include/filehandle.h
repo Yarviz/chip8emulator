@@ -15,12 +15,8 @@ class Filehandle
         Filehandle();
         virtual ~Filehandle();
 
-        void getFiles(std::vector<std::string> *file_list);
-        bool loadFile(std::vector<uint8_t> *rom, std::string filename);
-
-    protected:
-
-    private:
+        void getFiles(std::vector<std::string> *file_list);                 // Get list of programs in "rom\"-directory
+        bool loadFile(std::vector<uint8_t> *rom, std::string filename);     // Load program from "rom\"-directory
 };
 
 #endif // FILEHANDLE_H

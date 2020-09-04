@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#define MAX_KEYS   18
+#define MAX_KEYS   18           // Number of keys to read
 
 class Keyboard
 {
@@ -15,13 +15,13 @@ class Keyboard
         Keyboard();
         virtual ~Keyboard();
 
-        void readKeys();
-        void clearKeys();
-        bool getKey(int key_code);
-        uint8_t waitKeyPressed();
+        void readKeys();            // Read keys if they are pressed or not. Store values in keybuffer
+        void clearKeys();           // Clear keybuffer
+        bool getKey(int key_code);  // Read keys value from buffer
+        uint8_t waitKeyPressed();   // Wait until some key is pressed
 
     private:
-        bool key[MAX_KEYS];
+        bool key[MAX_KEYS];         // keybuffer
 };
 
 #endif // KEYBOARD_H
