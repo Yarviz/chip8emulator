@@ -68,6 +68,7 @@ int Emulator::readText(std::string txt)     // Process users command
                             cout << " " << file << endl;
                         cout << reset << endl;
                     }
+                    else cout << endl << " No programs found!" << endl << endl;
                     return 1;
                     break;
 
@@ -78,8 +79,7 @@ int Emulator::readText(std::string txt)     // Process users command
                         {
                             cout << endl << " " << words[1] << " loaded succesfully" << endl << endl;
                         }
-                        else
-                            cout << endl << " file loading failed!" << endl << endl;
+                        else cout << endl << " File loading failed!" << endl << endl;
                     }
                     return 1;
                     break;
@@ -96,14 +96,14 @@ int Emulator::readText(std::string txt)     // Process users command
                         }
                         else cpu.run(DEFAULT_CLOK_SPEED);
                     }
-                    else cout << endl << " no program in memory!" << endl << endl;
+                    else cout << endl << " No program in memory!" << endl << endl;
                     return 1;
                     break;
 
                 case 5:     // View loaded programs source code
                     if (program.size()) viewProgramSource();
                     else
-                        cout << endl << " no program in memory" << endl << endl;
+                        cout << endl << " No program in memory" << endl << endl;
                     return 1;
                     break;
                 }
