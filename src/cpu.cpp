@@ -138,6 +138,7 @@ void Cpu::executeInstruction()  // Execute instruction from ROM-address where pr
             switch (i) {
                 case 0: // CLS
                     renderer.clr();
+                    renderer.draw();
                     PC += 2;
                     break;
                 case 1: // RET

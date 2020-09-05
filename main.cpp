@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 #ifdef _WIN32
 
 #include <windows.h>
@@ -20,8 +22,6 @@
 #endif
 
 #endif // _WIN32
-
-using namespace std;
 
 #include "emulator.h"
 

@@ -26,7 +26,7 @@ void Filehandle::getFiles(std::vector<std::string> *file_list)
         {
             f1 = strtok(rom_file->d_name, ".");
             f2 = strtok(NULL, ".");
-            if (f1 != NULL)
+            if (f2 != NULL)
             {
                 if (strcmp(f2, "ch8") == 0)
                 {

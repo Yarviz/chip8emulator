@@ -22,9 +22,7 @@ void Screen::start()    // Start renderer
 
 void Screen::clr()  // Clear screen and erase screen buffer
 {
-    //cout << curUp(height);
     std::fill(buffer.begin(), buffer.end(), 0);
-    //draw();
 }
 
 void Screen::drawKeyboard() // Draw keys on screen
