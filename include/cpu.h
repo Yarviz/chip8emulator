@@ -7,9 +7,14 @@
 #include <iomanip>
 #include <time.h>
 #include <vector>
-#include <conio.h>
 #include <chrono>
 #include <thread>
+
+#ifdef _WIN32
+    #include <conio.h>
+#elif __linux
+    #include <ncurses.h>
+#endif // _WIN32
 
 #include "screen.h"
 #include "keyboard.h"

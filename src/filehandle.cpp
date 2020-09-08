@@ -26,7 +26,7 @@ void Filehandle::getFiles(std::vector<std::string> *file_list)
         {
             f1 = strtok(rom_file->d_name, ".");
             f2 = strtok(NULL, ".");
-            if (f2 != NULL)
+            if (f1 != NULL)
             {
                 if (strcmp(f2, "ch8") == 0)
                 {
@@ -41,10 +41,11 @@ void Filehandle::getFiles(std::vector<std::string> *file_list)
 // Load program from "rom\"-directory
 bool Filehandle::loadFile(std::vector<uint8_t> *rom, std::string filename)
 {
+    transform(filename.begin(), filename.end(), filename.begin(), ::toupper);
     std::string file_name = "roms/" + filename + ".ch8";
     std::ifstream file;
 
-    file.open(file_name.data(), std::ios::in | std::ios::binary);
+    file.open(file_name.c_str(), std::ios::in | std::ios::binary);
     if (file.is_open())
     {
         rom->clear();

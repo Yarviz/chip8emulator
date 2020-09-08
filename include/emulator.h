@@ -7,8 +7,13 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
-#include <conio.h>
 #include <stdlib.h>
+
+#ifdef _WIN32
+
+    #include <conio.h>
+
+#endif // _WIN32
 
 #include "com.h"
 #include "screen.h"
@@ -27,6 +32,7 @@ class Emulator : public Com
 
         void start();                   // Start emulator
         int typeText();                 // Get typed command from user
+        void _getch();                  // Wait until key is pressed
 
     private:
         int readText(std::string txt);  // Process users command
