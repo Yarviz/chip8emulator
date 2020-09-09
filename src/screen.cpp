@@ -22,7 +22,9 @@ void Screen::start()    // Start renderer
 
 void Screen::clr()  // Clear screen and erase screen buffer
 {
+    //cout << curUp(height);
     std::fill(buffer.begin(), buffer.end(), 0);
+    //draw();
 }
 
 void Screen::drawKeyboard() // Draw keys on screen
@@ -60,8 +62,17 @@ void Screen::draw(bool cur_up) // Draw screen buffer
         cout << " ";
         for (int x = 0; x < width; x++)
         {
-            if (buffer[y * width + x]) cout << (uint8_t)219;
-                else cout << (uint8_t)177;
+            #ifdef __WIN32
+
+                if (buffer[y * width + x]) cout << (uint8_t)219;
+                    else cout << (uint8_t)177;
+
+            #elif __linux
+
+                if (buffer[y * width + x]) cout << "\u2588";
+                    else cout << "\u2591";
+
+            #endif // __WIN32
         }
         cout << endl;
     }
@@ -91,12 +102,25 @@ uint8_t Screen::drawSprite(int x, int y, std::vector<uint8_t> sprite)   // Draw 
         {
             if (sprite[i] & b) // AND sprite bits with sample bits if match
             {
-                if (!(buffer[y2 * width + x2] ^= 1))    // XOR buffer and look collision
-                {                                       // if pixel is 1 on buffer(x2, y2).
-                    collis = 1;                         // Pixel turn off is exists and collision = 1
-                    cout << (uint8_t)177;
-                }
-                else cout << (uint8_t)219;
+                #ifdef __WIN32
+
+                    if (!(buffer[y2 * width + x2] ^= 1))    // XOR buffer and look collision
+                    {                                       // if pixel is 1 on buffer(x2, y2).
+                        collis = 1;                         // Pixel turn off is exists and collision = 1
+                        cout << (uint8_t)177;
+                    }
+                    else cout << (uint8_t)219;
+
+                #elif __linux
+
+                    if (!(buffer[y2 * width + x2] ^= 1))    // XOR buffer and look collision
+                    {                                       // if pixel is 1 on buffer(x2, y2).
+                        collis = 1;                         // Pixel turn off is exists and collision = 1
+                        cout << "\u2591";
+                    }
+                    else cout << "\u2588";
+
+                #endif // __WIN32
             }
             else cout << curRight(1);
             if (++x2 == width) b = 0x01;        // If sprite over width, set sample bits to 0000 0001

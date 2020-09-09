@@ -11,17 +11,17 @@
 
 #include <iostream>
 
-using namespace std;
-
 #ifdef _WIN32
 
-#include <windows.h>
+    #include <windows.h>
 
-#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING              // Enable virtual processing for ANSI escape codes in windows console
-#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
-#endif
+    #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING              // Enable virtual processing for ANSI escape codes in windows console
+    #define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+    #endif
 
 #endif // _WIN32
+
+using namespace std;
 
 #include "emulator.h"
 
@@ -29,15 +29,15 @@ int main()
 {
     #ifdef _WIN32
 
-    HANDLE hConsole;
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD dwMode = 0;
+        HANDLE hConsole;
+        hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD dwMode = 0;
 
-    SetConsoleOutputCP(850);                        // Sets the console output code page
-    GetConsoleMode(hConsole, &dwMode);
+        SetConsoleOutputCP(850);                        // Sets the console output code page
+        GetConsoleMode(hConsole, &dwMode);
 
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hConsole, dwMode);
+        dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        SetConsoleMode(hConsole, dwMode);
 
     #endif // _WIN32
 

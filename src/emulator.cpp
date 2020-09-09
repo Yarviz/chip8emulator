@@ -7,7 +7,7 @@ Emulator::Emulator()
 
 Emulator::~Emulator()
 {
-    //delete(File);
+    //
 }
 
 void Emulator::start()  // Start emulator
@@ -24,6 +24,24 @@ int Emulator::typeText()    // Get typed command from user
     std::getline(cin, txt);
 
     return readText(txt);
+}
+
+void Emulator::_getch()
+{
+    #ifdef _WIN32
+        getch();
+    #elif __linux
+        struct termios t;
+
+        tcgetattr(0, &t);
+        t.c_lflag &= ~ECHO + ~ICANON;
+        tcsetattr(0, TCSANOW, &t);
+        fflush(stdout);
+        getchar();
+        t.c_lflag |= ICANON + ECHO;
+        tcsetattr(0, TCSANOW, &t);
+
+    #endif // _WIN32
 }
 
 int Emulator::readText(std::string txt)     // Process users command
@@ -158,7 +176,7 @@ void Emulator::viewProgramSource()  // View loaded programs source code
         cout << hex << setfill('0') << setw(2) << (int)*it << "  " << reset << hex_bytes << endl;
         lines++;
         memory_pt += 2;
-        if (lines == 25) {getch();lines = 0;}
+        if (lines == 25) {_getch();lines = 0;}
     }
     cout << reset << endl;
 }

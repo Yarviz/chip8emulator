@@ -6,6 +6,7 @@
 #include <vector>
 #include <dirent.h>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
 

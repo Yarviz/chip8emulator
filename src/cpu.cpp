@@ -308,6 +308,7 @@ void Cpu::run(int cpu_speed)    // Start Cpu and set clock speed(Hz)
     renderer.start();           // Start renderer
     renderer.draw();
     renderer.drawKeyboard();
+    keyboard.init(true);
     keyboard.clearKeys();       // Clear keybuffer
 
     chrono::duration<long, ratio<1,60>> cpu_tick_Hz(1); // Screen refresh rate 60Hz
@@ -317,6 +318,7 @@ void Cpu::run(int cpu_speed)    // Start Cpu and set clock speed(Hz)
         auto cpu_timer = std::chrono::steady_clock::now();  //  Start_cpu_timer;
         ticks += (float)cpu_Hz / 60.0;  // Count how many ticks emulate on next frame
 
+        keyboard.clearKeys();
         for (int i = 0; i < (int)ticks; i++)
         {
             switch (cpu_state)  // Each tick check Cpu state
@@ -332,8 +334,7 @@ void Cpu::run(int cpu_speed)    // Start Cpu and set clock speed(Hz)
                     }
                     if (keyboard.getKey(17))    // If space is pressed, pause
                     {
-                        while(_kbhit()) getch();
-                        getch();
+                        keyboard.WaitKeyHit();
                     }
                     executeInstruction();   // Execute next instruction from memory where PC points
                     break;
@@ -346,6 +347,7 @@ void Cpu::run(int cpu_speed)    // Start Cpu and set clock speed(Hz)
         std::this_thread::sleep_until(cpu_timer + cpu_tick_Hz);   // Slow emulator down to 60Hz
     }
 
+    keyboard.init(false);
     cout << endl << curShow() << flush;
-    while(_kbhit()) getch();    // Clear keybuffer before exit to console
+    //while(_kbhit()) getch();    // Clear keybuffer before exit to console
 }
