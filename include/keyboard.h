@@ -4,6 +4,7 @@
 #ifdef _WIN32
 
     #include <conio.h>
+    #include <windows.h>
 
 #elif __linux
 
